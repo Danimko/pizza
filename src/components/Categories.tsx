@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 export const Categories = ({
   categoryId,
   onClickCategory,
@@ -19,9 +17,7 @@ export const Categories = ({
     { id: 4, name: "Острые", index: 4 },
     { id: 5, name: "Закрытые", index: 5 },
   ];
-  const onChangeActive = (index: number) => {
-    // setCategoryId(index);
-  };
+
   return (
     <div className="categories">
       <ul>

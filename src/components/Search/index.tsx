@@ -1,12 +1,9 @@
 import styles from "./Search.module.scss";
+import { useContext } from "react";
+import { SearchContext } from "../../App";
 
-export const Search = ({
-  searchValue,
-  setSearchValue,
-}: {
-  searchValue: string;
-  setSearchValue: any;
-}) => {
+export const Search = () => {
+  const { searchValue, setSearchValue } = useContext(SearchContext);
   const clearTextValue = () => {
     setSearchValue("");
   };
