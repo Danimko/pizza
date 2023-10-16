@@ -1,28 +1,43 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { RootState, useAppDispatch, useAppSelector } from "../redux/store";
+import { setSort, SortModel } from "../redux/slices/filterSlice";
 
-export const Sort = ({
-  sortType,
-  onClickSort,
-}: {
-  sortType: any;
-  onClickSort: (sortProperty: any) => void;
-}) => {
+export const sortList = [
+  { sortProperty: "rating", name: "популярности (DESC)" },
+  { sortProperty: "-rating", name: "популярности (ASC)" },
+  { sortProperty: "price", name: "цене (DESC)" },
+  { sortProperty: "-price", name: "цене (ASC)" },
+  { sortProperty: "title", name: "алфавиту (DESC)" },
+  { sortProperty: "-title", name: "алфавиту (ASC)" },
+];
+
+export const Sort = () => {
+  const dispatch = useAppDispatch();
+  const sort = useAppSelector((state: RootState) => state.filter.sort);
+  const sortRef: any = useRef();
   const [isVisible, setIsVisible] = useState(false);
-  const list = [
-    { sortProperty: "rating", name: "популярности (DESC)" },
-    { sortProperty: "-rating", name: "популярности (ASC)" },
-    { sortProperty: "price", name: "цене (DESC)" },
-    { sortProperty: "-price", name: "цене (ASC)" },
-    { sortProperty: "title", name: "алфавиту (DESC)" },
-    { sortProperty: "-title", name: "алфавиту (ASC)" },
-  ];
 
-  const onClickListItem = (i: any) => {
-    onClickSort(i);
+  const onClickListItem = (obj: SortModel) => {
+    dispatch(setSort(obj));
     setIsVisible(!isVisible);
   };
+
+  useEffect(() => {
+    const handleClickOutSide = (event: MouseEvent) => {
+      if (!event.composedPath().includes(sortRef.current)) {
+        setIsVisible(false);
+      }
+    };
+    document.body.addEventListener("click", (event) =>
+      handleClickOutSide(event)
+    );
+    return () =>
+      document.body.removeEventListener("click", (event) =>
+        handleClickOutSide(event)
+      );
+  }, []);
   return (
-    <div className="sort">
+    <div ref={sortRef} className="sort">
       <div className="sort__label">
         <svg
           width="10"
@@ -37,17 +52,17 @@ export const Sort = ({
           />
         </svg>
         <b>Сортировка по:</b>
-        <span onClick={() => setIsVisible(!isVisible)}>{sortType.name}</span>
+        <span onClick={() => setIsVisible(!isVisible)}>{sort.name}</span>
       </div>
       {isVisible && (
         <div className="sort__popup">
           <ul>
-            {list.map((sortObj, i) => (
+            {sortList.map((sortObj, i) => (
               <li
                 onClick={() => onClickListItem(sortObj)}
                 key={i}
                 className={
-                  sortType.sortProperty === sortObj.sortProperty ? "active" : ""
+                  sort.sortProperty === sortObj.sortProperty ? "active" : ""
                 }
               >
                 {sortObj.name}
