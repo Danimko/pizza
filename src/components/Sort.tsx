@@ -20,6 +20,7 @@ export const Sort = () => {
   const onClickListItem = (obj: SortModel) => {
     dispatch(setSort(obj));
     setIsVisible(!isVisible);
+    console.log(sort);
   };
 
   useEffect(() => {
