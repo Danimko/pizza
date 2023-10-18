@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { RootState, useAppDispatch, useAppSelector } from "../../redux/store";
 import { addItem, CartState, PizzaModel } from "../../redux/slices/cartSlice";
+import { selectCartItemById } from "../../redux/store/selectors";
 
 const typeNames = ["тонкое", "традиционное"];
 
@@ -15,15 +16,11 @@ export const PizzaBlock = ({
   rating,
   count,
 }: PizzaModel) => {
-  const cartItem = useAppSelector((state) =>
-    state.cart.items.find((obj) => obj.id === id)
-  );
+  const cartItem = useAppSelector(selectCartItemById(id));
   const [pizzaCount, setPizzaCount] = useState(0);
-  const changePizzaCount = () => setPizzaCount(pizzaCount + 1);
   const [activeSize, setActiveSize] = useState(0);
   const [activeType, setActiveType] = useState(0);
   const dispatch = useAppDispatch();
-  const pizza = useAppSelector((state: RootState) => state.cart.items);
 
   const addedCount = cartItem ? cartItem.count : 0;
 
@@ -39,7 +36,6 @@ export const PizzaBlock = ({
     };
     dispatch(addItem(item));
     setPizzaCount(pizzaCount + 1);
-    console.log(pizza);
   };
 
   return (

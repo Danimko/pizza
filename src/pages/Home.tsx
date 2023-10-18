@@ -3,11 +3,9 @@ import { Categories } from "../components/Categories";
 import { Sort, sortList } from "../components/Sort";
 import { Skeleton } from "../components/PizzaBlock/skeleton";
 import { PizzaBlock } from "../components/PizzaBlock";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Pagination } from "../components/Pagination";
-import { SearchContext } from "../App";
 import { useSelector } from "react-redux";
-import { RootState } from "../redux/store";
 import {
   setCategoryId,
   setCurrentPage,
@@ -15,22 +13,19 @@ import {
   SortModel,
 } from "../redux/slices/filterSlice";
 import { useAppDispatch } from "../redux/store";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { fetchPizzas } from "../redux/slices/pizzaSlice";
+import { selectFilter, selectPizzaData } from "../redux/store/selectors";
 
 export const Home = () => {
   const navigate = useNavigate();
-  const categoryId = useSelector((state: RootState) => state.filter.categoryId);
-  const currentPage = useSelector(
-    (state: RootState) => state.filter.currentPage
-  );
-  const sortType = useSelector((state: RootState) => state.filter.sort);
   const dispatch = useAppDispatch();
+
+  const { categoryId, currentPage, sort, searchValue } =
+    useSelector(selectFilter);
+  const { items, status } = useSelector(selectPizzaData);
   const isSearch = useRef(false);
   const isMounted = useRef(false);
-  const { searchValue } = useContext(SearchContext);
-  const [pizzas, setPizzas] = useState<any[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
 
   const onChangePage = (number: number) => dispatch(setCurrentPage(number));
 
@@ -38,21 +33,13 @@ export const Home = () => {
     dispatch(setCategoryId(id));
   };
 
-  const fetchPizzas = () => {
-    setIsLoaded(false);
-    const order = sortType.sortProperty.includes("-") ? "asc" : "desc";
-    const sortBy = sortType.sortProperty.replace("-", "");
+  const getPizzas = async () => {
+    const order = sort.sortProperty.includes("-") ? "asc" : "desc";
+    const sortBy = sort.sortProperty.replace("-", "");
     const category = categoryId > 0 ? `category=${categoryId}` : ``;
     const search = searchValue ? `&search=${searchValue}` : ``;
 
-    axios
-      .get(
-        `https://651b3616194f77f2a5ae5679.mockapi.io/pizzas?page=${currentPage}&limit=4&${category}&sortBy=${sortBy}&order=${order}${search}`
-      )
-      .then((res) => {
-        setPizzas(res.data);
-        setIsLoaded(true);
-      });
+    dispatch(fetchPizzas({ order, sortBy, category, search, currentPage }));
   };
 
   useEffect(() => {
@@ -75,24 +62,24 @@ export const Home = () => {
   useEffect(() => {
     window.scroll(0, 0);
     if (!isSearch.current) {
-      fetchPizzas();
+      getPizzas();
     }
     isSearch.current = false;
-  }, [categoryId, sortType, searchValue, currentPage]);
+  }, [categoryId, sort, searchValue, currentPage]);
 
   useEffect(() => {
     if (isMounted.current) {
       const queryString = qs.stringify({
-        sortProperty: sortType.sortProperty,
+        sortProperty: sort.sortProperty,
         categoryId,
         currentPage,
       });
       navigate(`?${queryString}`);
     }
     isMounted.current = true;
-  }, [categoryId, sortType, searchValue, currentPage]);
+  }, [categoryId, sort, searchValue, currentPage]);
 
-  const items = pizzas.map((pizza) => (
+  const pizzaItems = items.map((pizza) => (
     <PizzaBlock key={pizza?.id} {...pizza} />
   ));
 
@@ -110,7 +97,17 @@ export const Home = () => {
         <Sort />
       </div>
       <h2 className="content__title">Все пиццы</h2>
-      <div className="content__items">{!isLoaded ? skeletons : items}</div>
+      {status === "error" ? (
+        <div className={"content__error-info"}>
+          <h2>Произошла ошибка😕</h2>
+          <p>К сожалению, не удалось получить питсы :(</p>
+        </div>
+      ) : (
+        <div className="content__items">
+          {status === "loading" ? skeletons : pizzaItems}
+        </div>
+      )}
+
       <Pagination currentPage={currentPage} onChangePage={onChangePage} />
     </div>
   );

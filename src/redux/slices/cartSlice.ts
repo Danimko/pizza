@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { find } from "lodash";
 
 export interface PizzaModel {
   id: number;
@@ -27,12 +26,6 @@ export const cartSlice = createSlice({
   name: "cart",
   initialState: initialState,
   reducers: {
-    // addItem(state, action: PayloadAction<PizzaModel>) {
-    //   state.items.push(action.payload);
-    //   state.totalPrice = state.items.reduce((sum, obj) => {
-    //     return obj.price + sum;
-    //   }, 0);
-    // },
     addItem(state, action: PayloadAction<PizzaModel>) {
       const findItem = state.items.find((obj) => obj.id === action.payload.id);
       if (findItem) {
