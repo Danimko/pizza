@@ -1,6 +1,7 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { PizzaModel } from "./cartSlice";
-import axios from "axios";
+import { fetchPizzas } from "../store/Pizza`s/action";
+import { transformPizzaItem } from "../store/Pizza`s/transform";
 
 export interface FetchModel {
   currentPage: number;
@@ -10,33 +11,37 @@ export interface FetchModel {
   search: string;
 }
 
-export const fetchPizzas = createAsyncThunk(
-  "pizza/fetchPizzasStatus",
-  async (params: FetchModel) => {
-    const { currentPage, category, sortBy, order, search } = params;
-    const { data } = await axios.get<FetchModel>(
-      `https://651b3616194f77f2a5ae5679.mockapi.io/pizzas?page=${currentPage}&limit=4&${category}&sortBy=${sortBy}&order=${order}${search}`
-    );
-    return data;
-  }
-);
-
 export interface PizzaState {
   items: PizzaModel[];
+  pizzaItem: PizzaModel | null;
   status: string;
 }
 
 const initialState: PizzaState = {
   items: [],
+  pizzaItem: null,
   status: "",
 };
 
-export const pizzaSlice = createSlice({
+export const { actions, reducer } = createSlice({
   name: "pizza",
-  initialState: initialState,
+  initialState,
   reducers: {
     setItems(state, action) {
       state.items = action.payload;
+    },
+    fillPizzaItem: {
+      reducer: (
+        state: PizzaState,
+        action: PayloadAction<PizzaModel | null>
+      ) => {
+        state.pizzaItem = action.payload;
+      },
+      prepare: (pizzaItem: PizzaModel | null) => {
+        return {
+          payload: transformPizzaItem(pizzaItem),
+        };
+      },
     },
   },
   extraReducers: (builder) => {
@@ -58,6 +63,6 @@ export const pizzaSlice = createSlice({
       });
   },
 });
-export const { setItems } = pizzaSlice.actions;
+export const { setItems } = actions;
 
-export default pizzaSlice.reducer;
+export default reducer;

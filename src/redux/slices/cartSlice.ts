@@ -1,5 +1,17 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+export interface CartItemModel {
+  id: number;
+  title: string;
+  price: number;
+  imageUrl: string;
+  types?: any;
+  sizes?: any;
+  category?: number;
+  rating?: number;
+  count: number;
+}
+
 export interface PizzaModel {
   id: number;
   title: string;

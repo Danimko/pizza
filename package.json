@@ -2,7 +2,7 @@
   "name": "react-pizza",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://danimko.github.io/pizza/",
+  "homepage": "https://danimko.github.io/",
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.7",
     "@testing-library/jest-dom": "^5.17.0",

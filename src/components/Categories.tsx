@@ -1,10 +1,12 @@
+export interface CategoriesPropsModel {
+  categoryId: number;
+  onClickCategory: (index: number) => void;
+}
+
 export const Categories = ({
   categoryId,
   onClickCategory,
-}: {
-  categoryId: number;
-  onClickCategory: (index: number) => void;
-}) => {
+}: CategoriesPropsModel) => {
   const categories = [
     {
       id: 0,

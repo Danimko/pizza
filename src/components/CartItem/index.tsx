@@ -1,5 +1,6 @@
 import {
   addItem,
+  CartItemModel,
   clearItems,
   minusItem,
   PizzaModel,
@@ -15,7 +16,7 @@ export const CartItem = ({
   price,
   count,
   imageUrl,
-}: PizzaModel) => {
+}: CartItemModel) => {
   const dispatch = useAppDispatch();
   const onClickPlus = () => {
     dispatch(addItem({ id, title, price, imageUrl, count }));

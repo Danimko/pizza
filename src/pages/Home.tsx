@@ -13,8 +13,8 @@ import {
   SortModel,
 } from "../redux/slices/filterSlice";
 import { useAppDispatch } from "../redux/store";
-import { useNavigate } from "react-router-dom";
-import { fetchPizzas } from "../redux/slices/pizzaSlice";
+import { Link, useNavigate } from "react-router-dom";
+import { fetchPizzas } from "../redux/store/Pizza`s/action";
 import { selectFilter, selectPizzaData } from "../redux/store/selectors";
 
 export const Home = () => {
@@ -79,9 +79,7 @@ export const Home = () => {
     isMounted.current = true;
   }, [categoryId, sort, searchValue, currentPage]);
 
-  const pizzaItems = items.map((pizza) => (
-    <PizzaBlock key={pizza?.id} {...pizza} />
-  ));
+  const pizzaItems = items.map((pizza) => <PizzaBlock {...pizza} />);
 
   const skeletons = [...new Array(6)].map((_, index) => (
     <Skeleton key={index} />
